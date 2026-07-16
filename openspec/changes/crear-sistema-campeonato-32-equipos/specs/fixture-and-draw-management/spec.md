@@ -21,3 +21,14 @@ The system SHALL generate matchdays and matches for group stage without duplicat
 #### Scenario: Rechazo de segunda generacion
 - **WHEN** an organizer requests fixture generation after a fixture already exists for the same stage
 - **THEN** the system rejects the operation to prevent duplicate schedules
+
+### Requirement: API REST para sorteo y fixture
+The system SHALL expose draw and fixture endpoints for organizers under `/api/v1/championships/{championshipId}`.
+
+#### Scenario: Sorteo con semilla opcional via API
+- **WHEN** a client sends `POST /api/v1/championships/{championshipId}/draw` with optional `seed`
+- **THEN** the system returns `200 OK` with generated group assignments and applied seed value
+
+#### Scenario: Conflicto por fixture preexistente via API
+- **WHEN** a client sends `POST /api/v1/championships/{championshipId}/fixtures` and the fixture already exists
+- **THEN** the system returns `409 Conflict` with an error code indicating duplicate fixture generation

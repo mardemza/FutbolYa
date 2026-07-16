@@ -32,3 +32,10 @@
 - [ ] 5.2 Agregar pruebas de integracion end-to-end del ciclo completo de campeonato.
 - [ ] 5.3 Agregar manejo de errores y mensajes de validacion claros para estados invalidos.
 - [ ] 5.4 Documentar flujo operativo minimo para organizadores y criterios de aceptacion de negocio.
+
+## 6. Contrato API y documentacion OpenAPI
+
+- [ ] 6.1 Definir DTOs de request/response por endpoint y versionar bajo prefijo `/api/v1`.
+- [ ] 6.2 Estandarizar errores HTTP (`400/404/409/422`) con estructura `code`, `message`, `details`, `traceId`.
+- [ ] 6.3 Agregar decoradores Swagger (`@ApiOperation`, `@ApiResponse`, `@ApiTags`) en controllers de campeonato, equipos, fixture y fases.
+- [ ] 6.4 Publicar y validar contrato OpenAPI en Swagger para todo el flujo de campeonato.

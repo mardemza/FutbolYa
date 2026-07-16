@@ -9,6 +9,7 @@ Se necesita una base funcional para gestionar torneos de futbol de 32 equipos de
 - Agregar la capacidad de sortear grupos, calendario de fechas y encuentros de manera automatica.
 - Agregar la capacidad de gestionar niveles/fases del torneo (grupos y eliminacion directa) y generar cruces de la siguiente fase segun resultados.
 - Definir reglas de validacion para evitar estados invalidos (equipos incompletos, sorteos duplicados, avance de fase inconsistente).
+- Definir un contrato API REST versionado (`/api/v1`) para exponer el flujo completo via controllers NestJS y documentarlo en OpenAPI/Swagger.
 
 ## Capabilities
 
@@ -27,3 +28,4 @@ Se necesita una base funcional para gestionar torneos de futbol de 32 equipos de
 - Nuevas reglas de negocio para validaciones y transiciones de estado.
 - Nuevos endpoints/API o casos de uso para operaciones de alta, sorteo y avance de fase.
 - Requiere persistencia para entidades de torneo y relaciones entre equipos, jugadores y partidos.
+- Requiere DTOs, validaciones de entrada/salida y estandarizacion de errores HTTP para clientes web/admin.

@@ -49,3 +49,46 @@ Restricciones principales:
 - [Riesgo] Inconsistencias por actualizaciones concurrentes de partidos -> Mitigacion: transacciones y versionado optimista sobre standings/fases.
 - [Trade-off] Mayor esfuerzo inicial de modelado -> Beneficio: menor deuda tecnica al incorporar nuevas fases/formats.
 - [Riesgo] Errores de calendario al generar fechas -> Mitigacion: validadores de cobertura (todos contra todos en grupo, sin duplicados).
+
+## API Design (REST v1)
+
+Base path: `/api/v1`
+
+Recursos y endpoints principales:
+- `POST /championships`: crear campeonato (`201 Created`).
+- `GET /championships/{championshipId}`: obtener detalle de campeonato (`200 OK`).
+- `PATCH /championships/{championshipId}`: editar metadata en `draft` (`200 OK`).
+- `POST /championships/{championshipId}/close-registration`: cerrar inscripcion con validacion de 32 equipos (`200 OK`, `422` si faltan).
+
+- `POST /championships/{championshipId}/teams`: alta de equipo (`201 Created`).
+- `GET /championships/{championshipId}/teams`: listar equipos (`200 OK`).
+- `PATCH /championships/{championshipId}/teams/{teamId}`: editar equipo (`200 OK`).
+- `DELETE /championships/{championshipId}/teams/{teamId}`: baja de equipo (`204 No Content`).
+
+- `POST /championships/{championshipId}/teams/{teamId}/players`: alta de jugador (`201 Created`).
+- `GET /championships/{championshipId}/teams/{teamId}/players`: listar jugadores (`200 OK`).
+- `PATCH /championships/{championshipId}/teams/{teamId}/players/{playerId}`: editar jugador (`200 OK`).
+- `DELETE /championships/{championshipId}/teams/{teamId}/players/{playerId}`: baja de jugador (`204 No Content`).
+
+- `POST /championships/{championshipId}/draw`: ejecutar sorteo de grupos (admite `seed` opcional) (`200 OK`).
+- `POST /championships/{championshipId}/fixtures`: generar fixture de grupos (`201 Created`, `409` si ya existe).
+- `GET /championships/{championshipId}/groups`: listar grupos y equipos (`200 OK`).
+- `GET /championships/{championshipId}/matches`: listar partidos por filtros de fase/fecha (`200 OK`).
+
+- `PUT /matches/{matchId}/result`: registrar/actualizar resultado (`200 OK`).
+- `GET /championships/{championshipId}/groups/{groupId}/standings`: tabla de posiciones de grupo (`200 OK`).
+- `POST /championships/{championshipId}/stages/knockout/generate`: generar cruces de eliminacion (`201 Created`, `422` si faltan clasificados).
+- `GET /championships/{championshipId}/stages/knockout/bracket`: consultar cuadro eliminatorio (`200 OK`).
+
+Convenciones de contrato:
+- IDs en formato UUID.
+- Campos de fecha/hora en ISO-8601 UTC.
+- Paginacion estandar (`page`, `pageSize`, `total`) en listados que puedan crecer.
+- Errores de dominio uniformes con payload: `code`, `message`, `details`, `traceId`.
+
+Codigos de estado esperados:
+- `200`, `201`, `204` para operaciones exitosas.
+- `400` para payload invalido.
+- `404` para recurso inexistente.
+- `409` para conflictos de estado (ej: fixture duplicado).
+- `422` para violaciones de reglas de negocio (ej: cupo incompleto, clasificacion pendiente).

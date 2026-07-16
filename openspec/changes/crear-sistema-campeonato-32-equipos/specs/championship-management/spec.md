@@ -21,3 +21,14 @@ The system SHALL enforce valid state transitions for the championship lifecycle.
 #### Scenario: Rechazo de cierre sin cupo completo
 - **WHEN** an organizer requests registration close with fewer than 32 teams
 - **THEN** the system rejects the action and returns a validation error explaining missing teams
+
+### Requirement: API REST para administracion de campeonatos
+The system SHALL expose championship management endpoints under `/api/v1/championships` for create, read, update and registration close operations.
+
+#### Scenario: Creacion via API
+- **WHEN** a client sends `POST /api/v1/championships` with valid payload
+- **THEN** the system returns `201 Created` with the championship identifier and initial `draft` state
+
+#### Scenario: Cierre de inscripcion via API con validacion de negocio
+- **WHEN** a client sends `POST /api/v1/championships/{championshipId}/close-registration` and the championship has fewer than 32 teams
+- **THEN** the system returns `422 Unprocessable Entity` with error code and missing-team details
