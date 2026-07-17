@@ -158,3 +158,19 @@ export class ChampionshipGroupParamsDto {
   @IsUUID()
   groupId!: string;
 }
+
+export class ChampionshipTeamPlayerParamsDto {
+  @IsUUID()
+  championshipId!: string;
+
+  @IsUUID()
+  teamId!: string;
+
+  @IsUUID()
+  playerId!: string;
+}
+
+export class MatchParamsDto {
+  @IsUUID()
+  matchId!: string;
+}

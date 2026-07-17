@@ -1,0 +1,39 @@
+import { DataSource } from 'typeorm';
+import { resolve } from 'node:path';
+import { ChampionshipSchema1762790000000 } from './migrations/1762790000000-championship-schema';
+import { TournamentCoreSchema1762795000000 } from './migrations/1762795000000-tournament-core-schema';
+import { InitialSchema1762700000000 } from './migrations/1762700000000-initial-schema';
+import { ChampionshipEntity } from './entities/championship.entity';
+import { GroupEntity } from './entities/group.entity';
+import { GroupTeamEntity } from './entities/group-team.entity';
+import { MatchEntity } from './entities/match.entity';
+import { PlayerEntity } from './entities/player.entity';
+import { StandingEntity } from './entities/standing.entity';
+import { TeamEntity } from './entities/team.entity';
+import { UserEntity } from './entities/user.entity';
+
+const defaultDatabasePath = resolve(__dirname, '..', '..', 'data', 'futbolya.sqlite');
+
+const dataSource = new DataSource({
+  type: 'better-sqlite3',
+  database: process.env.DATABASE_PATH ?? defaultDatabasePath,
+  entities: [
+    UserEntity,
+    ChampionshipEntity,
+    TeamEntity,
+    PlayerEntity,
+    GroupEntity,
+    GroupTeamEntity,
+    MatchEntity,
+    StandingEntity,
+  ],
+  migrations: [
+    InitialSchema1762700000000,
+    ChampionshipSchema1762790000000,
+    TournamentCoreSchema1762795000000,
+  ],
+  synchronize: false,
+  logging: false,
+});
+
+export default dataSource;

@@ -6,6 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { randomUUID } from 'node:crypto';
 
 @Catch()
 export class ApiErrorFilter implements ExceptionFilter {
@@ -14,7 +15,7 @@ export class ApiErrorFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const traceId = request.headers['x-request-id']?.toString() ?? crypto.randomUUID();
+    const traceId = request.headers['x-request-id']?.toString() ?? randomUUID();
 
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
