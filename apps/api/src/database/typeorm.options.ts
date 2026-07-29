@@ -2,6 +2,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { resolve } from 'node:path';
 import { ChampionshipSchema1762790000000 } from './migrations/1762790000000-championship-schema';
 import { TournamentCoreSchema1762795000000 } from './migrations/1762795000000-tournament-core-schema';
+import { AuthOwnershipSchema1762810000000 } from './migrations/1762810000000-auth-ownership-schema';
 import { InitialSchema1762700000000 } from './migrations/1762700000000-initial-schema';
 import { ChampionshipEntity } from './entities/championship.entity';
 import { GroupEntity } from './entities/group.entity';
@@ -31,6 +32,7 @@ export const typeOrmOptions: TypeOrmModuleOptions = {
     InitialSchema1762700000000,
     ChampionshipSchema1762790000000,
     TournamentCoreSchema1762795000000,
+    AuthOwnershipSchema1762810000000,
   ],
   migrationsRun: true,
   synchronize: false,

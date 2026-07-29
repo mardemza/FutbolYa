@@ -20,6 +20,7 @@ async function bootstrap() {
     .setTitle('FutbolYa API')
     .setDescription('Documentacion de endpoints de la API')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);

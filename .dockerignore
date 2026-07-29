@@ -1,0 +1,12 @@
+node_modules/
+.git/
+.gitignore
+openspec/
+.agent/
+.claude/
+.codex/
+.cursor/
+.stitch-export/
+*.md
+*.ps1
+.DS_Store

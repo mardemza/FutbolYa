@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { ChampionshipController } from './championship/championship.controller';
 import { MatchController } from './championship/match.controller';
@@ -11,12 +12,14 @@ import { MatchEntity } from './database/entities/match.entity';
 import { PlayerEntity } from './database/entities/player.entity';
 import { StandingEntity } from './database/entities/standing.entity';
 import { TeamEntity } from './database/entities/team.entity';
+import { UserEntity } from './database/entities/user.entity';
 import { typeOrmOptions } from './database/typeorm.options';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmOptions),
     TypeOrmModule.forFeature([
+      UserEntity,
       ChampionshipEntity,
       TeamEntity,
       PlayerEntity,
@@ -25,6 +28,7 @@ import { typeOrmOptions } from './database/typeorm.options';
       MatchEntity,
       StandingEntity,
     ]),
+    AuthModule,
   ],
   controllers: [AppController, ChampionshipController, MatchController],
   providers: [ChampionshipService],

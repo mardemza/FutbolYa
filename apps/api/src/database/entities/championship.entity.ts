@@ -36,6 +36,9 @@ export class ChampionshipEntity {
   @Column({ name: 'registered_teams', type: 'integer', default: 0 })
   registeredTeams!: number;
 
+  @Column({ name: 'owner_id', type: 'varchar', nullable: true })
+  ownerId!: string | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'datetime' })
   createdAt!: Date;
 

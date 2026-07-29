@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -46,7 +47,10 @@ export class ChampionshipService {
     private readonly standingRepository: Repository<StandingEntity>,
   ) {}
 
-  async create(payload: CreateChampionshipDto): Promise<ChampionshipEntity> {
+  async create(
+    payload: CreateChampionshipDto,
+    ownerId: string,
+  ): Promise<ChampionshipEntity> {
     const championship = this.championshipRepository.create({
       name: payload.name,
       season: payload.season,
@@ -54,9 +58,30 @@ export class ChampionshipService {
       status: 'draft',
       maxTeams: 32,
       registeredTeams: 0,
+      ownerId,
     });
 
     return this.championshipRepository.save(championship);
+  }
+
+  async listMine(ownerId: string): Promise<ChampionshipEntity[]> {
+    return this.championshipRepository.find({
+      where: { ownerId },
+      order: { updatedAt: 'DESC' },
+    });
+  }
+
+  async requireOwned(
+    championshipId: string,
+    ownerId: string,
+  ): Promise<ChampionshipEntity> {
+    const championship = await this.findOne(championshipId);
+    if (championship.ownerId !== ownerId) {
+      throw new ForbiddenException(
+        `Championship ${championshipId} does not belong to the authenticated user`,
+      );
+    }
+    return championship;
   }
 
   async findOne(championshipId: string): Promise<ChampionshipEntity> {
@@ -476,11 +501,17 @@ export class ChampionshipService {
       .getMany();
   }
 
-  async updateMatchResult(matchId: string, payload: MatchResultDto): Promise<MatchEntity> {
+  async updateMatchResult(
+    matchId: string,
+    payload: MatchResultDto,
+    ownerId: string,
+  ): Promise<MatchEntity> {
     const match = await this.matchRepository.findOne({ where: { id: matchId } });
     if (!match) {
       throw new NotFoundException(`Match ${matchId} not found`);
     }
+
+    await this.requireOwned(match.championshipId, ownerId);
 
     match.homeGoals = payload.homeGoals;
     match.awayGoals = payload.awayGoals;

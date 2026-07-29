@@ -4,6 +4,7 @@ apps/*/coverage/
 apps/*/.turbo/
 *.log
 .DS_Store
+.stitch-export/
 
 # Env
 .env
