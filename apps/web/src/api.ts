@@ -1,6 +1,6 @@
 import { loadSession } from './lib/authStorage'
 
-const API_PREFIX = '/api/v1'
+const API_PREFIX = `${import.meta.env.VITE_API_URL ?? ''}/api/v1`
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const session = loadSession()
