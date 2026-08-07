@@ -6,15 +6,15 @@ export class ChampionshipSchema1762790000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "championships" (
-        "id" varchar PRIMARY KEY NOT NULL,
+        "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
         "name" varchar(120) NOT NULL,
         "season" varchar(20) NOT NULL,
         "start_date" varchar(10) NOT NULL,
-        "status" varchar(30) NOT NULL DEFAULT ('draft'),
-        "max_teams" integer NOT NULL DEFAULT (32),
-        "registered_teams" integer NOT NULL DEFAULT (0),
-        "created_at" datetime NOT NULL DEFAULT (datetime('now')),
-        "updated_at" datetime NOT NULL DEFAULT (datetime('now'))
+        "status" varchar(30) NOT NULL DEFAULT 'draft',
+        "max_teams" integer NOT NULL DEFAULT 32,
+        "registered_teams" integer NOT NULL DEFAULT 0,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now()
       )
     `);
   }

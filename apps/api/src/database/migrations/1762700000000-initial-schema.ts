@@ -6,11 +6,11 @@ export class InitialSchema1762700000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "users" (
-        "id" varchar PRIMARY KEY NOT NULL,
+        "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
         "email" varchar(160) NOT NULL,
         "password_hash" varchar(255) NOT NULL,
-        "created_at" datetime NOT NULL DEFAULT (datetime('now')),
-        "updated_at" datetime NOT NULL DEFAULT (datetime('now'))
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now()
       )
     `);
 

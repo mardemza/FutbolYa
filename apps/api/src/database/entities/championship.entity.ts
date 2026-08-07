@@ -36,12 +36,12 @@ export class ChampionshipEntity {
   @Column({ name: 'registered_teams', type: 'integer', default: 0 })
   registeredTeams!: number;
 
-  @Column({ name: 'owner_id', type: 'varchar', nullable: true })
+  @Column({ name: 'owner_id', type: 'uuid', nullable: true })
   ownerId!: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'datetime' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'datetime' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt!: Date;
 }

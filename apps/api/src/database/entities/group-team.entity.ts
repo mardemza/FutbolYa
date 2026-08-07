@@ -15,15 +15,15 @@ export class GroupTeamEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'championship_id', type: 'varchar' })
+  @Column({ name: 'championship_id', type: 'uuid' })
   championshipId!: string;
 
-  @Column({ name: 'group_id', type: 'varchar' })
+  @Column({ name: 'group_id', type: 'uuid' })
   groupId!: string;
 
-  @Column({ name: 'team_id', type: 'varchar' })
+  @Column({ name: 'team_id', type: 'uuid' })
   teamId!: string;
 
-  @CreateDateColumn({ name: 'created_at', type: 'datetime' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 }

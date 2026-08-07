@@ -13,10 +13,10 @@ export class PlayerEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'championship_id', type: 'varchar' })
+  @Column({ name: 'championship_id', type: 'uuid' })
   championshipId!: string;
 
-  @Column({ name: 'team_id', type: 'varchar' })
+  @Column({ name: 'team_id', type: 'uuid' })
   teamId!: string;
 
   @Column({ name: 'first_name', type: 'varchar', length: 80 })
@@ -28,9 +28,9 @@ export class PlayerEntity {
   @Column({ name: 'shirt_number', type: 'integer' })
   shirtNumber!: number;
 
-  @CreateDateColumn({ name: 'created_at', type: 'datetime' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'datetime' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt!: Date;
 }

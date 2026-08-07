@@ -6,12 +6,12 @@ export class TournamentCoreSchema1762795000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "teams" (
-        "id" varchar PRIMARY KEY NOT NULL,
-        "championship_id" varchar NOT NULL,
+        "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+        "championship_id" uuid NOT NULL,
         "name" varchar(80) NOT NULL,
         "short_name" varchar(10),
-        "created_at" datetime NOT NULL DEFAULT (datetime('now')),
-        "updated_at" datetime NOT NULL DEFAULT (datetime('now'))
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now()
       )
     `);
     await queryRunner.query(
@@ -20,14 +20,14 @@ export class TournamentCoreSchema1762795000000 implements MigrationInterface {
 
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "players" (
-        "id" varchar PRIMARY KEY NOT NULL,
-        "championship_id" varchar NOT NULL,
-        "team_id" varchar NOT NULL,
+        "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+        "championship_id" uuid NOT NULL,
+        "team_id" uuid NOT NULL,
         "first_name" varchar(80) NOT NULL,
         "last_name" varchar(80) NOT NULL,
         "shirt_number" integer NOT NULL,
-        "created_at" datetime NOT NULL DEFAULT (datetime('now')),
-        "updated_at" datetime NOT NULL DEFAULT (datetime('now'))
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now()
       )
     `);
     await queryRunner.query(
@@ -36,11 +36,11 @@ export class TournamentCoreSchema1762795000000 implements MigrationInterface {
 
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "groups" (
-        "id" varchar PRIMARY KEY NOT NULL,
-        "championship_id" varchar NOT NULL,
+        "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+        "championship_id" uuid NOT NULL,
         "name" varchar(16) NOT NULL,
-        "created_at" datetime NOT NULL DEFAULT (datetime('now')),
-        "updated_at" datetime NOT NULL DEFAULT (datetime('now'))
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now()
       )
     `);
     await queryRunner.query(
@@ -49,11 +49,11 @@ export class TournamentCoreSchema1762795000000 implements MigrationInterface {
 
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "group_teams" (
-        "id" varchar PRIMARY KEY NOT NULL,
-        "championship_id" varchar NOT NULL,
-        "group_id" varchar NOT NULL,
-        "team_id" varchar NOT NULL,
-        "created_at" datetime NOT NULL DEFAULT (datetime('now'))
+        "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+        "championship_id" uuid NOT NULL,
+        "group_id" uuid NOT NULL,
+        "team_id" uuid NOT NULL,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now()
       )
     `);
     await queryRunner.query(
@@ -65,19 +65,19 @@ export class TournamentCoreSchema1762795000000 implements MigrationInterface {
 
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "matches" (
-        "id" varchar PRIMARY KEY NOT NULL,
-        "championship_id" varchar NOT NULL,
+        "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+        "championship_id" uuid NOT NULL,
         "stage_type" varchar(20) NOT NULL,
         "round_name" varchar(32),
-        "group_id" varchar,
+        "group_id" uuid,
         "matchday" integer,
-        "home_team_id" varchar NOT NULL,
-        "away_team_id" varchar NOT NULL,
+        "home_team_id" uuid NOT NULL,
+        "away_team_id" uuid NOT NULL,
         "home_goals" integer,
         "away_goals" integer,
-        "status" varchar(16) NOT NULL DEFAULT ('scheduled'),
-        "created_at" datetime NOT NULL DEFAULT (datetime('now')),
-        "updated_at" datetime NOT NULL DEFAULT (datetime('now'))
+        "status" varchar(16) NOT NULL DEFAULT 'scheduled',
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now()
       )
     `);
     await queryRunner.query(
@@ -86,21 +86,21 @@ export class TournamentCoreSchema1762795000000 implements MigrationInterface {
 
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "standings" (
-        "id" varchar PRIMARY KEY NOT NULL,
-        "championship_id" varchar NOT NULL,
-        "group_id" varchar NOT NULL,
-        "team_id" varchar NOT NULL,
-        "played" integer NOT NULL DEFAULT (0),
-        "won" integer NOT NULL DEFAULT (0),
-        "drawn" integer NOT NULL DEFAULT (0),
-        "lost" integer NOT NULL DEFAULT (0),
-        "goals_for" integer NOT NULL DEFAULT (0),
-        "goals_against" integer NOT NULL DEFAULT (0),
-        "goal_difference" integer NOT NULL DEFAULT (0),
-        "points" integer NOT NULL DEFAULT (0),
-        "position" integer NOT NULL DEFAULT (0),
-        "created_at" datetime NOT NULL DEFAULT (datetime('now')),
-        "updated_at" datetime NOT NULL DEFAULT (datetime('now'))
+        "id" uuid PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+        "championship_id" uuid NOT NULL,
+        "group_id" uuid NOT NULL,
+        "team_id" uuid NOT NULL,
+        "played" integer NOT NULL DEFAULT 0,
+        "won" integer NOT NULL DEFAULT 0,
+        "drawn" integer NOT NULL DEFAULT 0,
+        "lost" integer NOT NULL DEFAULT 0,
+        "goals_for" integer NOT NULL DEFAULT 0,
+        "goals_against" integer NOT NULL DEFAULT 0,
+        "goal_difference" integer NOT NULL DEFAULT 0,
+        "points" integer NOT NULL DEFAULT 0,
+        "position" integer NOT NULL DEFAULT 0,
+        "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+        "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now()
       )
     `);
     await queryRunner.query(

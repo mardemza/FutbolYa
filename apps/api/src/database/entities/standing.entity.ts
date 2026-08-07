@@ -13,13 +13,13 @@ export class StandingEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'championship_id', type: 'varchar' })
+  @Column({ name: 'championship_id', type: 'uuid' })
   championshipId!: string;
 
-  @Column({ name: 'group_id', type: 'varchar' })
+  @Column({ name: 'group_id', type: 'uuid' })
   groupId!: string;
 
-  @Column({ name: 'team_id', type: 'varchar' })
+  @Column({ name: 'team_id', type: 'uuid' })
   teamId!: string;
 
   @Column({ type: 'integer', default: 0 })
@@ -49,9 +49,9 @@ export class StandingEntity {
   @Column({ type: 'integer', default: 0 })
   position!: number;
 
-  @CreateDateColumn({ name: 'created_at', type: 'datetime' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'datetime' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt!: Date;
 }

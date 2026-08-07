@@ -1,5 +1,4 @@
 import { DataSource } from 'typeorm';
-import { resolve } from 'node:path';
 import { ChampionshipSchema1762790000000 } from './migrations/1762790000000-championship-schema';
 import { TournamentCoreSchema1762795000000 } from './migrations/1762795000000-tournament-core-schema';
 import { AuthOwnershipSchema1762810000000 } from './migrations/1762810000000-auth-ownership-schema';
@@ -13,11 +12,19 @@ import { StandingEntity } from './entities/standing.entity';
 import { TeamEntity } from './entities/team.entity';
 import { UserEntity } from './entities/user.entity';
 
-const defaultDatabasePath = resolve(__dirname, '..', '..', 'data', 'futbolya.sqlite');
+function requireDatabaseUrl(): string {
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    throw new Error(
+      'DATABASE_URL is required (e.g. postgresql://futbolya:futbolya@localhost:5432/futbolya)',
+    );
+  }
+  return url;
+}
 
 const dataSource = new DataSource({
-  type: 'better-sqlite3',
-  database: process.env.DATABASE_PATH ?? defaultDatabasePath,
+  type: 'postgres',
+  url: requireDatabaseUrl(),
   entities: [
     UserEntity,
     ChampionshipEntity,

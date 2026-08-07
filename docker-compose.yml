@@ -1,15 +1,33 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: futbolya
+      POSTGRES_PASSWORD: futbolya
+      POSTGRES_DB: futbolya
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U futbolya -d futbolya"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
   api:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
     ports:
       - "3002:3002"
-    volumes:
-      - api-data:/app/apps/api/data
     environment:
       - PORT=3002
-      - DATABASE_PATH=/app/apps/api/data/futbolya.sqlite
+      - DATABASE_URL=postgresql://futbolya:futbolya@postgres:5432/futbolya
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
   web:
@@ -26,4 +44,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  api-data:
+  postgres-data:

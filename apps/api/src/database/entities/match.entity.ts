@@ -16,7 +16,7 @@ export class MatchEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'championship_id', type: 'varchar' })
+  @Column({ name: 'championship_id', type: 'uuid' })
   championshipId!: string;
 
   @Column({ name: 'stage_type', type: 'varchar', length: 20 })
@@ -25,16 +25,16 @@ export class MatchEntity {
   @Column({ name: 'round_name', type: 'varchar', length: 32, nullable: true })
   roundName!: string | null;
 
-  @Column({ name: 'group_id', type: 'varchar', nullable: true })
+  @Column({ name: 'group_id', type: 'uuid', nullable: true })
   groupId!: string | null;
 
   @Column({ name: 'matchday', type: 'integer', nullable: true })
   matchday!: number | null;
 
-  @Column({ name: 'home_team_id', type: 'varchar' })
+  @Column({ name: 'home_team_id', type: 'uuid' })
   homeTeamId!: string;
 
-  @Column({ name: 'away_team_id', type: 'varchar' })
+  @Column({ name: 'away_team_id', type: 'uuid' })
   awayTeamId!: string;
 
   @Column({ name: 'home_goals', type: 'integer', nullable: true })
@@ -46,9 +46,9 @@ export class MatchEntity {
   @Column({ type: 'varchar', length: 16, default: 'scheduled' })
   status!: MatchStatus;
 
-  @CreateDateColumn({ name: 'created_at', type: 'datetime' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'datetime' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt!: Date;
 }

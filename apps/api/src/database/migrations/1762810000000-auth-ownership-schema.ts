@@ -5,10 +5,10 @@ export class AuthOwnershipSchema1762810000000 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      'ALTER TABLE "users" ADD COLUMN "display_name" varchar(120)',
+      'ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "display_name" varchar(120)',
     );
     await queryRunner.query(
-      'ALTER TABLE "championships" ADD COLUMN "owner_id" varchar',
+      'ALTER TABLE "championships" ADD COLUMN IF NOT EXISTS "owner_id" uuid',
     );
     await queryRunner.query(
       'CREATE INDEX IF NOT EXISTS "IDX_championships_owner_id" ON "championships" ("owner_id")',
@@ -16,13 +16,12 @@ export class AuthOwnershipSchema1762810000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query('DROP INDEX IF EXISTS "IDX_championships_owner_id"');
     await queryRunner.query(
-      'DROP INDEX IF EXISTS "IDX_championships_owner_id"',
+      'ALTER TABLE "championships" DROP COLUMN IF EXISTS "owner_id"',
     );
-    // SQLite cannot drop columns easily in older versions; recreate if needed.
     await queryRunner.query(
-      'ALTER TABLE "championships" DROP COLUMN "owner_id"',
+      'ALTER TABLE "users" DROP COLUMN IF EXISTS "display_name"',
     );
-    await queryRunner.query('ALTER TABLE "users" DROP COLUMN "display_name"');
   }
 }
