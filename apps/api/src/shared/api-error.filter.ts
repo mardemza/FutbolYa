@@ -35,6 +35,12 @@ export class ApiErrorFilter implements ExceptionFilter {
       return;
     }
 
+    if (exception instanceof Error) {
+      console.error(`[${traceId}]`, exception.message, exception.stack);
+    } else {
+      console.error(`[${traceId}]`, exception);
+    }
+
     response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       code: 'INTERNAL_SERVER_ERROR',
       message: 'Unexpected server error',

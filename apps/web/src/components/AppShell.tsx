@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { NotificationBell } from './notifications/NotificationBell'
 import { Icon } from './Icon'
 
 type NavItem = {
@@ -143,7 +144,7 @@ export function AppShell({ title, subtitle, tabs }: AppShellProps) {
                 ))}
               </div>
             )}
-            <Icon name="notifications" className="text-primary-fixed" />
+            <NotificationBell />
             <div className="hidden text-right sm:block">
               <p className="font-label text-xs leading-none text-white">{displayName}</p>
               <p className="text-[10px] uppercase text-secondary-fixed-dim">Director de Torneo</p>

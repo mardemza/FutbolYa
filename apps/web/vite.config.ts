@@ -15,6 +15,11 @@ export default defineConfig({
         target: `http://${apiHost}:${apiPort}`,
         changeOrigin: true,
       },
+      '/socket.io': {
+        target: `http://${apiHost}:${apiPort}`,
+        changeOrigin: true,
+        ws: true,
+      },
     },
   },
 })

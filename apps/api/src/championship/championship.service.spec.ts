@@ -11,6 +11,16 @@ const createRepositoryMock = () => ({
   createQueryBuilder: jest.fn(),
 });
 
+const createNotificationServiceMock = () => ({
+  notifyChampionshipCreated: jest.fn(),
+  notifyTeamRegistered: jest.fn(),
+  notifyRegistrationClosed: jest.fn(),
+  notifyGroupsDrawn: jest.fn(),
+  notifyFixtureGenerated: jest.fn(),
+  notifyMatchResultUpdated: jest.fn(),
+  notifyPhaseChanged: jest.fn(),
+});
+
 describe('ChampionshipService', () => {
   it('should reject registration close when team capacity is incomplete', async () => {
     const championshipRepository = createRepositoryMock();
@@ -36,6 +46,7 @@ describe('ChampionshipService', () => {
       groupTeamRepository as never,
       matchRepository as never,
       standingRepository as never,
+      createNotificationServiceMock() as never,
     );
 
     await expect(
@@ -74,6 +85,7 @@ describe('ChampionshipService', () => {
       groupTeamRepository as never,
       matchRepository as never,
       standingRepository as never,
+      createNotificationServiceMock() as never,
     );
 
     const created = await service.createTeam(championship.id, {
@@ -127,6 +139,7 @@ describe('ChampionshipService', () => {
       groupTeamRepository as never,
       matchRepository as never,
       standingRepository as never,
+      createNotificationServiceMock() as never,
     );
 
     const result = await service.generateGroupFixtures(championshipId);
@@ -166,6 +179,7 @@ describe('ChampionshipService', () => {
       groupTeamRepository as never,
       matchRepository as never,
       standingRepository as never,
+      createNotificationServiceMock() as never,
     );
 
     await expect(service.generateGroupFixtures(championshipId)).rejects.toBeInstanceOf(

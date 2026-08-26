@@ -27,6 +27,7 @@ import {
   UpdateTeamDto,
   UpdateChampionshipDto,
 } from './championship.dto';
+import { NotificationService } from '../notifications/notification.service';
 
 @Injectable()
 export class ChampionshipService {
@@ -45,6 +46,7 @@ export class ChampionshipService {
     private readonly matchRepository: Repository<MatchEntity>,
     @InjectRepository(StandingEntity)
     private readonly standingRepository: Repository<StandingEntity>,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async create(
@@ -61,7 +63,9 @@ export class ChampionshipService {
       ownerId,
     });
 
-    return this.championshipRepository.save(championship);
+    const saved = await this.championshipRepository.save(championship);
+    await this.notificationService.notifyChampionshipCreated(ownerId, saved);
+    return saved;
   }
 
   async listMine(ownerId: string): Promise<ChampionshipEntity[]> {
@@ -131,8 +135,14 @@ export class ChampionshipService {
       });
     }
 
+    const previousStatus = championship.status;
     championship.status = 'registration-closed' as ChampionshipStatus;
-    return this.championshipRepository.save(championship);
+    const saved = await this.championshipRepository.save(championship);
+    await this.notifyOwner(saved, async (ownerId) => {
+      await this.notificationService.notifyRegistrationClosed(ownerId, saved);
+      await this.notificationService.notifyPhaseChanged(ownerId, saved, previousStatus);
+    });
+    return saved;
   }
 
   async createTeam(
@@ -164,7 +174,10 @@ export class ChampionshipService {
 
     const created = await this.teamRepository.save(team);
     championship.registeredTeams += 1;
-    await this.championshipRepository.save(championship);
+    const savedChampionship = await this.championshipRepository.save(championship);
+    await this.notifyOwner(savedChampionship, async (ownerId) => {
+      await this.notificationService.notifyTeamRegistered(ownerId, savedChampionship, created);
+    });
     return created;
   }
 
@@ -339,8 +352,13 @@ export class ChampionshipService {
     }
     await this.groupTeamRepository.save(groupTeams);
 
+    const previousStatus = championship.status;
     championship.status = 'drawn';
-    await this.championshipRepository.save(championship);
+    const saved = await this.championshipRepository.save(championship);
+    await this.notifyOwner(saved, async (ownerId) => {
+      await this.notificationService.notifyGroupsDrawn(ownerId, saved);
+      await this.notificationService.notifyPhaseChanged(ownerId, saved, previousStatus);
+    });
 
     return this.listGroups(championshipId);
   }
@@ -435,8 +453,13 @@ export class ChampionshipService {
     await this.matchRepository.save(matches);
     await this.standingRepository.save(standings);
 
+    const previousStatus = championship.status;
     championship.status = 'in-progress';
-    await this.championshipRepository.save(championship);
+    const saved = await this.championshipRepository.save(championship);
+    await this.notifyOwner(saved, async (ownerId) => {
+      await this.notificationService.notifyFixtureGenerated(ownerId, saved, matches.length);
+      await this.notificationService.notifyPhaseChanged(ownerId, saved, previousStatus);
+    });
 
     return { createdMatches: matches.length };
   }
@@ -513,6 +536,9 @@ export class ChampionshipService {
 
     await this.requireOwned(match.championshipId, ownerId);
 
+    const wasCorrection = match.status === 'played';
+    const championship = await this.findOne(match.championshipId);
+
     match.homeGoals = payload.homeGoals;
     match.awayGoals = payload.awayGoals;
     match.status = 'played';
@@ -522,6 +548,28 @@ export class ChampionshipService {
     if (updated.stageType === 'group' && updated.groupId) {
       await this.recalculateStandings(updated.championshipId, updated.groupId);
     }
+
+    await this.notifyOwner(championship, async (recipientId) => {
+      const [homeTeam, awayTeam, group] = await Promise.all([
+        this.teamRepository.findOne({ where: { id: updated.homeTeamId } }),
+        this.teamRepository.findOne({ where: { id: updated.awayTeamId } }),
+        updated.groupId
+          ? this.groupRepository.findOne({ where: { id: updated.groupId } })
+          : Promise.resolve(null),
+      ]);
+
+      await this.notificationService.notifyMatchResultUpdated(recipientId, {
+        championshipId: updated.championshipId,
+        matchId: updated.id,
+        homeName: homeTeam?.name ?? 'Local',
+        awayName: awayTeam?.name ?? 'Visitante',
+        homeGoals: payload.homeGoals,
+        awayGoals: payload.awayGoals,
+        groupLabel: group ? `Grupo ${group.name}` : 'Eliminatoria',
+        matchday: updated.matchday,
+        wasCorrection,
+      });
+    });
 
     return updated;
   }
@@ -796,5 +844,15 @@ export class ChampionshipService {
         }),
       ),
     );
+  }
+
+  private async notifyOwner(
+    championship: ChampionshipEntity,
+    fn: (ownerId: string) => Promise<void>,
+  ): Promise<void> {
+    if (!championship.ownerId) {
+      return;
+    }
+    await fn(championship.ownerId);
   }
 }

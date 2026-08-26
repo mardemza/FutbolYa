@@ -1,13 +1,16 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ApiErrorFilter } from './shared/api-error.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useWebSocketAdapter(new IoAdapter(app));
   app.enableCors({
     origin: process.env.CORS_ORIGIN?.split(',') ?? true,
+    credentials: true,
   });
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(

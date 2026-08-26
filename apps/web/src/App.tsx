@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from './components/AppShell'
 import { RequireAuth } from './components/RequireAuth'
 import { AuthProvider } from './context/AuthContext'
+import { NotificationProvider } from './context/NotificationContext'
 import { ChampionshipProvider, useChampionship } from './context/ChampionshipContext'
 import { formatShortDate } from './lib/championshipUi'
 import { BracketPage } from './pages/BracketPage'
@@ -10,6 +11,7 @@ import { DrawPage } from './pages/DrawPage'
 import { FixturePage } from './pages/FixturePage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
+import { NotificationsPage } from './pages/NotificationsPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { StandingsPage } from './pages/StandingsPage'
 import { TeamsPage } from './pages/TeamsPage'
@@ -54,17 +56,30 @@ function ChampionshipLayoutInner() {
   return <AppShell title={title} subtitle={subtitle} tabs={tabs} />
 }
 
+function NotificationsLayout() {
+  return (
+    <RequireAuth>
+      <AppShell title="Centro de Notificaciones" subtitle="AVISOS EN TIEMPO REAL" />
+    </RequireAuth>
+  )
+}
+
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+      <NotificationProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
-          <Route element={<HomeLayout />}>
-            <Route index element={<HomePage />} />
-          </Route>
+            <Route element={<HomeLayout />}>
+              <Route index element={<HomePage />} />
+            </Route>
+
+            <Route element={<NotificationsLayout />}>
+              <Route path="/notifications" element={<NotificationsPage />} />
+            </Route>
 
           <Route path="/championships/:championshipId" element={<ChampionshipLayout />}>
             <Route index element={<DashboardPage />} />
@@ -78,6 +93,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
+      </NotificationProvider>
     </AuthProvider>
   )
 }

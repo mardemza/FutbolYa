@@ -2,11 +2,13 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ChampionshipSchema1762790000000 } from './migrations/1762790000000-championship-schema';
 import { TournamentCoreSchema1762795000000 } from './migrations/1762795000000-tournament-core-schema';
 import { AuthOwnershipSchema1762810000000 } from './migrations/1762810000000-auth-ownership-schema';
+import { NotificationsSchema1762820000000 } from './migrations/1762820000000-notifications-schema';
 import { InitialSchema1762700000000 } from './migrations/1762700000000-initial-schema';
 import { ChampionshipEntity } from './entities/championship.entity';
 import { GroupEntity } from './entities/group.entity';
 import { GroupTeamEntity } from './entities/group-team.entity';
 import { MatchEntity } from './entities/match.entity';
+import { NotificationEntity } from './entities/notification.entity';
 import { PlayerEntity } from './entities/player.entity';
 import { StandingEntity } from './entities/standing.entity';
 import { TeamEntity } from './entities/team.entity';
@@ -34,12 +36,14 @@ export const typeOrmOptions: TypeOrmModuleOptions = {
     GroupTeamEntity,
     MatchEntity,
     StandingEntity,
+    NotificationEntity,
   ],
   migrations: [
     InitialSchema1762700000000,
     ChampionshipSchema1762790000000,
     TournamentCoreSchema1762795000000,
     AuthOwnershipSchema1762810000000,
+    NotificationsSchema1762820000000,
   ],
   migrationsRun: true,
   synchronize: false,

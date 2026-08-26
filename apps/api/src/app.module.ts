@@ -9,11 +9,13 @@ import { ChampionshipEntity } from './database/entities/championship.entity';
 import { GroupEntity } from './database/entities/group.entity';
 import { GroupTeamEntity } from './database/entities/group-team.entity';
 import { MatchEntity } from './database/entities/match.entity';
+import { NotificationEntity } from './database/entities/notification.entity';
 import { PlayerEntity } from './database/entities/player.entity';
 import { StandingEntity } from './database/entities/standing.entity';
 import { TeamEntity } from './database/entities/team.entity';
 import { UserEntity } from './database/entities/user.entity';
 import { typeOrmOptions } from './database/typeorm.options';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -27,8 +29,10 @@ import { typeOrmOptions } from './database/typeorm.options';
       GroupTeamEntity,
       MatchEntity,
       StandingEntity,
+      NotificationEntity,
     ]),
     AuthModule,
+    NotificationsModule,
   ],
   controllers: [AppController, ChampionshipController, MatchController],
   providers: [ChampionshipService],
