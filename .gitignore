@@ -10,3 +10,5 @@ apps/*/.turbo/
 .env
 .env.*
 !.env.example
+
+.mcp.json
