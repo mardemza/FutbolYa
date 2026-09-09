@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { NotificationBell } from './notifications/NotificationBell'
+import { PwaInstallButton } from './pwa/PwaInstallButton'
 import { Icon } from './Icon'
 
 type NavItem = {
@@ -88,6 +89,7 @@ export function AppShell({ title, subtitle, tabs }: AppShellProps) {
         </button>
 
         <div className="space-y-1 border-t border-on-secondary-fixed-variant pt-4">
+          <PwaInstallButton variant="sidebar" />
           <button
             type="button"
             className="flex w-full items-center gap-3 px-4 py-2 text-secondary-fixed-dim hover:text-primary-fixed"
@@ -144,6 +146,7 @@ export function AppShell({ title, subtitle, tabs }: AppShellProps) {
                 ))}
               </div>
             )}
+            <PwaInstallButton variant="header" />
             <NotificationBell />
             <div className="hidden text-right sm:block">
               <p className="font-label text-xs leading-none text-white">{displayName}</p>

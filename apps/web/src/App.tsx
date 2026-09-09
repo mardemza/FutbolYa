@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from './components/AppShell'
+import { PwaUpdatePrompt } from './components/pwa/PwaUpdatePrompt'
 import { RequireAuth } from './components/RequireAuth'
 import { AuthProvider } from './context/AuthContext'
 import { NotificationProvider } from './context/NotificationContext'
@@ -69,6 +70,7 @@ export default function App() {
     <AuthProvider>
       <NotificationProvider>
         <BrowserRouter>
+          <PwaUpdatePrompt />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />

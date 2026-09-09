@@ -3,7 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#006e2f" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="FutbolYa" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link
+      rel="apple-touch-startup-image"
+      href="/splash/apple-splash-1170x2532.png"
+      media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="/splash/apple-splash-1290x2796.png"
+      media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    />
     <title>FutbolYa | Panel de Torneos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,8 +28,49 @@
       href="https://fonts.googleapis.com/css2?family=Anybody:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
       rel="stylesheet"
     />
+    <style>
+      #pwa-boot-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.25rem;
+        background: #f8f9ff;
+        color: #002109;
+        font-family: Anybody, system-ui, sans-serif;
+      }
+      #pwa-boot-splash[hidden] {
+        display: none !important;
+      }
+      #pwa-boot-splash .mark {
+        width: 5.5rem;
+        height: 5.5rem;
+        border-radius: 9999px;
+        background: #006e2f;
+        border: 3px solid #6bff8f;
+        display: grid;
+        place-items: center;
+        color: #6bff8f;
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+      }
+      #pwa-boot-splash .brand {
+        font-size: 1.15rem;
+        font-weight: 800;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+      }
+    </style>
   </head>
   <body>
+    <div id="pwa-boot-splash" role="status" aria-live="polite" aria-label="Cargando FutbolYa">
+      <div class="mark" aria-hidden="true">FY</div>
+      <p class="brand">FutbolYa</p>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

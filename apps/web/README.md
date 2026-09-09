@@ -1,32 +1,47 @@
-# React + TypeScript + Vite
+# FutbolYa Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+SPA React + Vite del panel de torneos.
 
-Currently, two official plugins are available:
+## Desarrollo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm run dev -w web
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+El service worker **no** se activa en `vite` (dev). Usá build + preview para PWA.
+
+## PWA
+
+La app es instalable (`vite-plugin-pwa`):
+
+- Manifest + iconos en `public/icons/`
+- Splash/boot en `index.html` (se oculta al montar React)
+- Splash iOS: `public/splash/`
+- Banner **Actualizar** cuando hay un SW waiting
+- Botón **Instalar app** solo si el browser dispara `beforeinstallprompt`
+
+### Regenerar iconos / splash
+
+```bash
+npm run generate:pwa-icons -w web
+```
+
+### Probar instalación y service worker
+
+1. `npm run build -w web`
+2. `npm run preview -w web` (HTTPS o `localhost`)
+3. Chrome → Application: Manifest, Service Workers, iconos 192/512
+4. Instalá desde el botón de la UI o el menú del browser (si el criterio de installability se cumple)
+
+### Probar actualización
+
+1. Con preview corriendo y la app abierta, cambiá algo visible (p. ej. un texto) y volvé a `npm run build -w web`
+2. Reiniciá preview (o serví el nuevo `dist`)
+3. Recargá / esperá el check del SW → debe aparecer “Hay una actualización disponible”
+4. Pulsá **Actualizar** → recarga con la versión nueva
+
+### Producción
+
+Serví el build bajo **HTTPS**. Sin contexto seguro el SW no se registra (excepto `localhost`).
+
+Las rutas `/api/**` y `/socket.io/**` usan red (no cache de datos de torneo).
