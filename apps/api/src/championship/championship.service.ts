@@ -19,6 +19,7 @@ import { PlayerEntity } from '../database/entities/player.entity';
 import { StandingEntity } from '../database/entities/standing.entity';
 import { TeamEntity } from '../database/entities/team.entity';
 import {
+  BulkCreateTeamsDto,
   CreatePlayerDto,
   CreateTeamDto,
   CreateChampionshipDto,
@@ -179,6 +180,76 @@ export class ChampionshipService {
       await this.notificationService.notifyTeamRegistered(ownerId, savedChampionship, created);
     });
     return created;
+  }
+
+  async createTeamsBulk(
+    championshipId: string,
+    payload: BulkCreateTeamsDto,
+  ): Promise<TeamEntity[]> {
+    const names = payload.teams.map((team) => team.name.trim());
+    const uniqueNames = new Set(names.map((name) => name.toLowerCase()));
+    if (uniqueNames.size !== names.length) {
+      throw new BadRequestException('Duplicate team names in bulk payload');
+    }
+
+    const created = await this.championshipRepository.manager.transaction(
+      async (manager) => {
+        const championshipRepo = manager.getRepository(ChampionshipEntity);
+        const teamRepo = manager.getRepository(TeamEntity);
+
+        const championship = await championshipRepo.findOne({
+          where: { id: championshipId },
+        });
+        if (!championship) {
+          throw new NotFoundException(`Championship ${championshipId} not found`);
+        }
+        this.ensureRegistrationOpen(championship);
+
+        const remaining = championship.maxTeams - championship.registeredTeams;
+        if (remaining <= 0) {
+          throw new UnprocessableEntityException({
+            message: 'Maximum team capacity reached',
+            maxTeams: championship.maxTeams,
+          });
+        }
+        if (payload.teams.length > remaining) {
+          throw new UnprocessableEntityException({
+            message: 'Bulk create exceeds remaining team capacity',
+            remaining,
+            requested: payload.teams.length,
+          });
+        }
+
+        const existing = await teamRepo.find({
+          where: { championshipId, name: In(names) },
+        });
+        if (existing.length > 0) {
+          throw new ConflictException('Team name already exists in this championship');
+        }
+
+        const teams = teamRepo.create(
+          payload.teams.map((team) => ({
+            championshipId,
+            name: team.name.trim(),
+            shortName: team.shortName?.trim() || null,
+          })),
+        );
+        const savedTeams = await teamRepo.save(teams);
+        championship.registeredTeams += savedTeams.length;
+        await championshipRepo.save(championship);
+        return { savedTeams, championship };
+      },
+    );
+
+    await this.notifyOwner(created.championship, async (ownerId) => {
+      await this.notificationService.notifyTeamsRegisteredBulk(
+        ownerId,
+        created.championship,
+        created.savedTeams.length,
+      );
+    });
+
+    return created.savedTeams;
   }
 
   async listTeams(championshipId: string): Promise<TeamEntity[]> {

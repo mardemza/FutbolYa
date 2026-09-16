@@ -49,24 +49,22 @@ export function TeamsPage() {
     )
     if (!ok) return
 
+    const generated = buildRandomTeams(remaining, teams)
     await run(async () => {
-      const generated = buildRandomTeams(remaining, teams)
-      for (const team of generated) {
-        await apiRequest(`/championships/${championshipId}/teams`, {
+      try {
+        await apiRequest(`/championships/${championshipId}/teams/bulk`, {
           method: 'POST',
-          body: JSON.stringify({
-            name: team.name,
-            shortName: team.shortName,
-          }),
+          body: JSON.stringify({ teams: generated }),
         })
+        setMessage(
+          'info',
+          generated.length === 1
+            ? '1 equipo aleatorio registrado'
+            : `${generated.length} equipos aleatorios registrados`,
+        )
+      } finally {
+        await refreshAll()
       }
-      await refreshAll()
-      setMessage(
-        'info',
-        generated.length === 1
-          ? '1 equipo aleatorio registrado'
-          : `${generated.length} equipos aleatorios registrados`,
-      )
     })
   }
 
