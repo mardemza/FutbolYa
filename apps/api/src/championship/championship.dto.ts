@@ -1,5 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
   IsInt,
   IsOptional,
   IsString,
@@ -8,6 +12,7 @@ import {
   Matches,
   Max,
   Min,
+  ValidateNested,
 } from 'class-validator';
 
 export class CreateChampionshipDto {
@@ -66,6 +71,16 @@ export class CreateTeamDto {
   @IsString()
   @Length(2, 10)
   shortName?: string;
+}
+
+export class BulkCreateTeamsDto {
+  @ApiProperty({ type: [CreateTeamDto] })
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(32)
+  @ValidateNested({ each: true })
+  @Type(() => CreateTeamDto)
+  teams!: CreateTeamDto[];
 }
 
 export class UpdateTeamDto {

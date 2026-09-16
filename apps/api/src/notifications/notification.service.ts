@@ -95,6 +95,29 @@ export class NotificationService {
     });
   }
 
+  async notifyTeamsRegisteredBulk(
+    ownerId: string,
+    championship: ChampionshipEntity,
+    createdCount: number,
+  ): Promise<void> {
+    await this.createAndPush({
+      recipientId: ownerId,
+      type: 'team.registered',
+      title:
+        createdCount === 1
+          ? 'Equipo inscripto'
+          : `${createdCount} equipos inscriptos`,
+      body:
+        createdCount === 1
+          ? `Se sumó 1 equipo al campeonato (${championship.registeredTeams}/${championship.maxTeams} cupos).`
+          : `Se sumaron ${createdCount} equipos al campeonato (${championship.registeredTeams}/${championship.maxTeams} cupos).`,
+      championshipId: championship.id,
+      entityType: 'championship',
+      entityId: championship.id,
+      deepLink: `/championships/${championship.id}/teams`,
+    });
+  }
+
   async notifyRegistrationClosed(
     ownerId: string,
     championship: ChampionshipEntity,

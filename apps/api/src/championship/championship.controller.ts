@@ -24,6 +24,7 @@ import {
 import { CurrentUser, type AuthUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
+  BulkCreateTeamsDto,
   CreatePlayerDto,
   CreateTeamDto,
   CreateChampionshipDto,
@@ -106,6 +107,19 @@ export class ChampionshipController {
   ) {
     await this.championshipService.requireOwned(championshipId, user.userId);
     return this.championshipService.createTeam(championshipId, payload);
+  }
+
+  @Post(':championshipId/teams/bulk')
+  @ApiOperation({ summary: 'Alta masiva de equipos en una sola transaccion' })
+  @ApiBody({ type: BulkCreateTeamsDto })
+  @ApiCreatedResponse({ description: 'Equipos creados' })
+  async createTeamsBulk(
+    @CurrentUser() user: AuthUser,
+    @Param('championshipId', new ParseUUIDPipe()) championshipId: string,
+    @Body() payload: BulkCreateTeamsDto,
+  ) {
+    await this.championshipService.requireOwned(championshipId, user.userId);
+    return this.championshipService.createTeamsBulk(championshipId, payload);
   }
 
   @Get(':championshipId/teams')

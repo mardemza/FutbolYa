@@ -1,4 +1,6 @@
 import { ConflictException, UnprocessableEntityException } from '@nestjs/common';
+import { ChampionshipEntity } from '../database/entities/championship.entity';
+import { TeamEntity } from '../database/entities/team.entity';
 import { ChampionshipService } from './championship.service';
 
 const createRepositoryMock = () => ({
@@ -9,11 +11,15 @@ const createRepositoryMock = () => ({
   count: jest.fn(async () => 0),
   delete: jest.fn(async () => ({ affected: 1 })),
   createQueryBuilder: jest.fn(),
+  manager: {
+    transaction: jest.fn(),
+  },
 });
 
 const createNotificationServiceMock = () => ({
   notifyChampionshipCreated: jest.fn(),
   notifyTeamRegistered: jest.fn(),
+  notifyTeamsRegisteredBulk: jest.fn(),
   notifyRegistrationClosed: jest.fn(),
   notifyGroupsDrawn: jest.fn(),
   notifyFixtureGenerated: jest.fn(),
@@ -96,6 +102,65 @@ describe('ChampionshipService', () => {
     expect(created.name).toBe('Team 1');
     expect(championship.registeredTeams).toBe(1);
     expect(championshipRepository.save).toHaveBeenCalledWith(championship);
+  });
+
+  it('should create teams in bulk transactionally and notify once', async () => {
+    const championshipRepository = createRepositoryMock();
+    const teamRepository = createRepositoryMock();
+    const playerRepository = createRepositoryMock();
+    const groupRepository = createRepositoryMock();
+    const groupTeamRepository = createRepositoryMock();
+    const matchRepository = createRepositoryMock();
+    const standingRepository = createRepositoryMock();
+    const notifications = createNotificationServiceMock();
+
+    const championship = {
+      id: '65e0d1f3-4e3b-4ca2-8c06-ec1574c89e42',
+      status: 'draft',
+      maxTeams: 32,
+      registeredTeams: 30,
+      ownerId: 'owner-1',
+    };
+
+    championshipRepository.findOne.mockResolvedValue(championship);
+    teamRepository.find.mockResolvedValue([]);
+    teamRepository.save.mockImplementation(async (value) =>
+      Array.isArray(value)
+        ? value.map((team, index) => ({ id: `team-${index}`, ...team }))
+        : { id: 'team-0', ...value },
+    );
+    championshipRepository.manager.transaction.mockImplementation(async (work) =>
+      work({
+        getRepository: (entity: unknown) => {
+          if (entity === ChampionshipEntity) return championshipRepository;
+          if (entity === TeamEntity) return teamRepository;
+          throw new Error(`Unexpected repository: ${String(entity)}`);
+        },
+      }),
+    );
+
+    const service = new ChampionshipService(
+      championshipRepository as never,
+      teamRepository as never,
+      playerRepository as never,
+      groupRepository as never,
+      groupTeamRepository as never,
+      matchRepository as never,
+      standingRepository as never,
+      notifications as never,
+    );
+
+    const created = await service.createTeamsBulk(championship.id, {
+      teams: [
+        { name: 'Team A', shortName: 'TA' },
+        { name: 'Team B', shortName: 'TB' },
+      ],
+    });
+
+    expect(created).toHaveLength(2);
+    expect(championship.registeredTeams).toBe(32);
+    expect(notifications.notifyTeamsRegisteredBulk).toHaveBeenCalledTimes(1);
+    expect(notifications.notifyTeamRegistered).not.toHaveBeenCalled();
   });
 
   it('should create 48 group matches and 32 standings for a valid draw', async () => {
