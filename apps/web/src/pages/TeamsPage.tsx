@@ -4,6 +4,7 @@ import { Banner } from '../components/Banner'
 import { Icon } from '../components/Icon'
 import { SegmentedProgress } from '../components/SegmentedProgress'
 import { useChampionship } from '../context/ChampionshipContext'
+import { buildRandomTeams } from '../lib/randomTeams'
 import type { Team } from '../types'
 
 export function TeamsPage() {
@@ -23,6 +24,7 @@ export function TeamsPage() {
   const locked = championship?.status !== 'draft'
   const registered = championship?.registeredTeams ?? 0
   const max = championship?.maxTeams ?? 32
+  const remaining = Math.max(0, max - registered)
 
   const addTeam = async (event: FormEvent) => {
     event.preventDefault()
@@ -37,6 +39,34 @@ export function TeamsPage() {
       setTeamForm({ name: '', shortName: '' })
       await refreshAll()
       setMessage('info', 'Equipo agregado')
+    })
+  }
+
+  const generateRandomTeams = async () => {
+    if (remaining <= 0) return
+    const ok = window.confirm(
+      `Se van a crear ${remaining} equipo${remaining === 1 ? '' : 's'} aleatorio${remaining === 1 ? '' : 's'} para completar el cupo (${registered}/${max}). Los equipos ya cargados no se modifican.`,
+    )
+    if (!ok) return
+
+    await run(async () => {
+      const generated = buildRandomTeams(remaining, teams)
+      for (const team of generated) {
+        await apiRequest(`/championships/${championshipId}/teams`, {
+          method: 'POST',
+          body: JSON.stringify({
+            name: team.name,
+            shortName: team.shortName,
+          }),
+        })
+      }
+      await refreshAll()
+      setMessage(
+        'info',
+        generated.length === 1
+          ? '1 equipo aleatorio registrado'
+          : `${generated.length} equipos aleatorios registrados`,
+      )
     })
   }
 
@@ -136,6 +166,15 @@ export function TeamsPage() {
                 className="w-full rounded-lg bg-primary py-3 font-bold text-white disabled:opacity-50"
               >
                 Registrar Equipo
+              </button>
+              <button
+                type="button"
+                disabled={loading || locked || remaining <= 0}
+                onClick={() => void generateRandomTeams()}
+                className="w-full rounded-lg border-2 border-primary bg-transparent py-3 font-bold text-primary disabled:opacity-50"
+              >
+                Generar equipos aleatorios
+                {remaining > 0 ? ` (${remaining})` : ''}
               </button>
               {locked && (
                 <p className="text-sm text-error">
